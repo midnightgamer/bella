@@ -1,5 +1,12 @@
 gsap.registerPlugin(ScrollTrigger);
 
+const allLinks = gsap.utils.toArray('.portfolio__categories a')
+let pageBackground = document.querySelector('.fill-background')
+let imageSmallContainer = document.querySelector('.portfolio__image--s')
+let imageLargeContainer = document.querySelector('.portfolio__image--l')
+let imageSmallContainerInside = document.querySelector('.portfolio__image--s .image_inside')
+let imageLargeContainerInside = document.querySelector('.portfolio__image--l .image_inside')
+
 
 function initNavigation() {
     const mainNavLinks = gsap.utils.toArray('.main-nav a');
@@ -145,12 +152,71 @@ function textHeight(textCopy) {
     return textCopy.clientHeight
 }
 
+
+function createPortfolioHover(e) {
+
+
+    if (e.type === 'mouseenter') {
+        // change image url
+        // fade in images
+        // all sibling to fade out and white
+        // active link white
+        // update background
+
+        const {imagelarge, imagesmall, color} = e.target.dataset;
+        const allSiblings = allLinks.filter(item => item !== e.target)
+        const tl = gsap.timeline()
+        tl.set(imageLargeContainerInside, {backgroundImage: `url(${imagelarge})`})
+            .set(imageSmallContainerInside, {backgroundImage: `url(${imagesmall})`})
+            .to([imageSmallContainer, imageLargeContainer], {autoAlpha: 1})
+            .to(allSiblings, {color: '#fff', autoAlpha: 0.2}, 0)
+            .to(e.target, {color: '#fff', autoAlpha: 1}, 0)
+            .to(pageBackground, {backgroundColor: color}, 0)
+
+
+    } else if (e.type === 'mouseleave') {
+        // fade out image
+        //  change all links to black
+        //  set background back to default
+        const tl = gsap.timeline()
+        tl.to([imageSmallContainer, imageLargeContainer], {autoAlpha: 0})
+            .to(allLinks, {color: '#000', autoAlpha: 1}, 0)
+            .to(pageBackground, {backgroundColor: '#acb7ab '}, 0)
+    }
+
+}
+
+function createPortfolioMove(e) {
+    const {clientY} = e;
+//    Move large image
+    gsap.to(imageLargeContainer, {
+        duration: 1.2,
+        y: -(document.querySelector('.portfolio__categories').clientHeight - clientY)/6,
+        ease:'Power3.out'
+    })
+    //Move small Image
+    gsap.to(imageSmallContainer, {
+        duration: 1.5,
+        y: -(document.querySelector('.portfolio__categories').clientHeight - clientY)/3,
+        ease:'Power3.out'
+    })
+}
+
+function initPortfolio() {
+
+    allLinks.forEach(link => {
+        link.addEventListener('mouseenter', createPortfolioHover)
+        link.addEventListener('mouseleave', createPortfolioHover)
+        link.addEventListener('mousemove', createPortfolioMove)
+    })
+}
+
 function init() {
 
     initNavigation();
     initHeaderTilt();
     initHoverRevel();
-
+    initPortfolio();
 }
 
 window.addEventListener('load', function () {
