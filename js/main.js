@@ -226,7 +226,7 @@ function initParallax() {
                 scrollTrigger: {
                     trigger: section,
                     start: 'top bottom',
-                    scrub: true,
+                    scrub: 1,
 
                 }
             })
@@ -240,7 +240,8 @@ function initPinSteps() {
         start: 'top center',
         endTrigger: '#stage4',
         end: 'center center',
-        pin: true
+        pin: true,
+        pinReparent: true,
     })
 
     const updateBodyColor = (color) => {
@@ -287,6 +288,34 @@ function init() {
     initScrollTo()
 }
 
+
 window.addEventListener('load', function () {
     init();
 });
+
+
+//Smooth Scrolling
+
+let container = document.querySelector('#scroll-container');
+let height;
+
+function setHeight() {
+    height = container.clientHeight;
+    document.body.style.height = height + 'px';
+}
+
+ScrollTrigger.addEventListener('refreshInit', setHeight)
+
+gsap.to(container, {
+    y: () => -(height - document.documentElement.clientHeight),
+    ease: 'none',
+    scrollTrigger: {
+        trigger: document.body,
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: 1,
+        invalidateOnRefresh: true
+    }
+})
+
+
