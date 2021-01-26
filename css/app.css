@@ -9,6 +9,7 @@
     --bcg-lightgreen: #a6b3b3;
     --bcg-lightbrown: #b0a7a4;
     --bcg-lightblue: #a3abb1;
+    --bcg-fill-color: var(--bcg-green);
     
     --bcg-loaderblue: #758A94;
     --bcg-loaderbluedark: #566C76;
@@ -613,6 +614,9 @@ section {
     width: 100%;
     height: 100%;
     position: fixed;
+    will-change: background-color ;
+    background-color: var(--bcg-fill-color);
+    transition: background-color 0.3s linear;
 }
 
 /* =Blog */

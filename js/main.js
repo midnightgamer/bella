@@ -154,7 +154,9 @@ function textHeight(textCopy) {
 
 
 function createPortfolioHover(e) {
-
+    const updateBodyColor = (color) => {
+        document.documentElement.style.setProperty('--bcg-fill-color', color)
+    }
 
     if (e.type === 'mouseenter') {
         // change image url
@@ -171,7 +173,7 @@ function createPortfolioHover(e) {
             .to([imageSmallContainer, imageLargeContainer], {autoAlpha: 1})
             .to(allSiblings, {color: '#fff', autoAlpha: 0.2}, 0)
             .to(e.target, {color: '#fff', autoAlpha: 1}, 0)
-            .to(pageBackground, {backgroundColor: color}, 0)
+            .add(updateBodyColor(color), 0)
 
 
     } else if (e.type === 'mouseleave') {
@@ -181,7 +183,7 @@ function createPortfolioHover(e) {
         const tl = gsap.timeline()
         tl.to([imageSmallContainer, imageLargeContainer], {autoAlpha: 0})
             .to(allLinks, {color: '#000', autoAlpha: 1}, 0)
-            .to(pageBackground, {backgroundColor: '#acb7ab '}, 0)
+            .add(updateBodyColor('#acb7ab'), 0)
     }
 
 }
@@ -191,14 +193,14 @@ function createPortfolioMove(e) {
 //    Move large image
     gsap.to(imageLargeContainer, {
         duration: 1.2,
-        y: -(document.querySelector('.portfolio__categories').clientHeight - clientY)/6,
-        ease:'Power3.out'
+        y: -(document.querySelector('.portfolio__categories').clientHeight - clientY) / 6,
+        ease: 'Power3.out'
     })
     //Move small Image
     gsap.to(imageSmallContainer, {
         duration: 1.5,
-        y: -(document.querySelector('.portfolio__categories').clientHeight - clientY)/3,
-        ease:'Power3.out'
+        y: -(document.querySelector('.portfolio__categories').clientHeight - clientY) / 3,
+        ease: 'Power3.out'
     })
 }
 
@@ -211,12 +213,78 @@ function initPortfolio() {
     })
 }
 
+function initParallax() {
+//    Select all section with-parallax class
+    gsap.utils.toArray('.with-parallax').forEach(
+        section => {
+            //    Get image in section
+            const image = section.querySelector('img')
+
+            gsap.to(image, {
+                yPercent: 20,
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: section,
+                    start: 'top bottom',
+                    scrub: true,
+
+                }
+            })
+        }
+    )
+}
+
+function initPinSteps() {
+    ScrollTrigger.create({
+        trigger: '.fixed-nav',
+        start: 'top center',
+        endTrigger: '#stage4',
+        end: 'center center',
+        pin: true
+    })
+
+    const updateBodyColor = (color) => {
+        document.documentElement.style.setProperty('--bcg-fill-color', color)
+    }
+
+
+    gsap.utils.toArray('.stage').forEach((stage, index) => {
+        const navLinks = gsap.utils.toArray('.fixed-nav li')
+
+        ScrollTrigger.create({
+            trigger: stage,
+            start: 'top center',
+            end: () => `+=${stage.clientHeight}`,
+            toggleClass: {
+                targets: navLinks[index],
+                className: 'is-active'
+            },
+            onEnter: () => updateBodyColor(stage.dataset.color),
+            onEnterBack: () => updateBodyColor(stage.dataset.color)
+        })
+    })
+}
+
+function initScrollTo() {
+//find all links
+    gsap.utils.toArray('.fixed-nav a').forEach(link => {
+        const target = link.getAttribute('href')
+        link.addEventListener('click', e => {
+            e.preventDefault();
+            gsap.to(window, {duration: 1.5, scrollTo: target, ease: 'Power2.out'})
+        })
+    })
+}
+
 function init() {
 
     initNavigation();
     initHeaderTilt();
     initHoverRevel();
     initPortfolio();
+    initParallax()
+    initPinSteps();
+    initScrollTo()
 }
 
 window.addEventListener('load', function () {
